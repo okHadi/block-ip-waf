@@ -49,7 +49,7 @@ jobs:
           new_addresses=$(jq -n --argjson ips "$addresses" --arg new_ip "${{ github.event.inputs.ip_address }}/32" '{"Addresses": ($ips + [$new_ip])}')
           echo $new_addresses > ips.json
           lockToken=$(echo $ipSet | jq -r '.LockToken')
-          aws wafv2 update-ip-set --scope CLOUDFRONT --name $IPSET_NAME --id $ipsetId --lock-token $lockToken --region us-east-1 --cli-input-json file://ip.json
+          aws wafv2 update-ip-set --scope CLOUDFRONT --name $IPSET_NAME --id $ipsetId --lock-token $lockToken --region us-east-1 --cli-input-json file://ips.json
 
         env:
           AWS_DEFAULT_REGION: us-east-1 # Replace with the AWS region where your WAF is configured
