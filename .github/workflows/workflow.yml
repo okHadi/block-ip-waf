@@ -1,0 +1,35 @@
+name: Block IP with AWS WAF
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  block-ip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2 # default
+          verbose: false # default
+          arch: amd64 # allowed values: amd64, arm64
+          rootdir: "" # defaults to "PWD"
+          workdir: "" # defaults to "PWD/unfor19-awscli"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::049964873288:user/test-WAF
+          aws-region: us-east-2
+
+      - name: Block IP
+        run: |
+          aws sts get-caller-identity
+        #${{ github.event.inputs.ip_address }}
+        env:
+          AWS_DEFAULT_REGION: us-east-1 # Replace with the AWS region where your WAF is configured
