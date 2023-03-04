@@ -35,7 +35,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Create the IP set
-        if: always()
+        continue-on-error: true
         run: |
           aws sts get-caller-identity
           aws wafv2 create-ip-set --name $IPSET_NAME --scope CLOUDFRONT --ip-address-version IPV4 --addresses 0.0.0.0/32 --region us-east-1
