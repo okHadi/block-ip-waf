@@ -46,8 +46,10 @@ jobs:
           ipsetId=$(echo $ipsetDetails | jq -r '.IPSets[0].Id')
           ipSet=$(aws wafv2 get-ip-set --name $IPSET_NAME --scope CLOUDFRONT --region us-east-1 --id $ipsetId)
           addresses=$(echo $ipSet | jq -r '.IPSet.Addresses')
-          new_addresses=$(jq -n --argjson ips "$addresses" --arg new_ip "1.1.1.1/32" '{"Addresses": ($ips + [$new_ip])}')
+          new_addresses=$(jq -n --argjson ips "$addresses" --arg new_ip "2.2.2.2/32" '{"Addresses": ($ips + [$new_ip])}')
+          echo $new_addresses
           echo $new_addresses > ips.json
+
           lockToken=$(echo $ipSet | jq -r '.LockToken')
           aws wafv2 update-ip-set --scope CLOUDFRONT --name $IPSET_NAME --id $ipsetId --lock-token $lockToken --region us-east-1 --cli-input-json file://ips.json
 
