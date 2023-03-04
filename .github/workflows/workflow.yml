@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  IPSET_NAME: waf-test
+
 jobs:
   block-ip:
     runs-on: ubuntu-latest
@@ -49,4 +52,4 @@ jobs:
 
         env:
           AWS_DEFAULT_REGION: us-east-1 # Replace with the AWS region where your WAF is configured
-          IPSET_NAME: waf-test
+
