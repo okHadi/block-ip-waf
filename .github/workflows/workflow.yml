@@ -1,9 +1,12 @@
 name: Block IP with AWS WAF
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      ip:
+        description: Add the IP to the block list
+        required: true
+        type: string
 
 env:
   IPSET_NAME: waf-test
@@ -42,11 +45,12 @@ jobs:
       - name: Add the IP to the IP set
         run: |
           sudo apt install jq
+          echo ${{ inputs.ip }}
           ipsetDetails=$(aws wafv2 list-ip-sets --scope CLOUDFRONT --region us-east-1)
           ipsetId=$(echo $ipsetDetails | jq -r '.IPSets[0].Id')
           ipSet=$(aws wafv2 get-ip-set --name $IPSET_NAME --scope CLOUDFRONT --region us-east-1 --id $ipsetId)
           addresses=$(echo $ipSet | jq -r '.IPSet.Addresses')
-          new_addresses=$(jq -n --argjson ips "$addresses" --arg new_ip "2.2.2.2/32" '{"Addresses": ($ips + [$new_ip])}')
+          new_addresses=$(jq -n --argjson ips "$addresses" --arg new_ip "${{ inputs.ip }}/32" '{"Addresses": ($ips + [$new_ip])}')
           echo $new_addresses
           echo $new_addresses > ips.json
 
